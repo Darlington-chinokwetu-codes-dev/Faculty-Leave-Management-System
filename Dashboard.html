@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — FLMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ── Navbar ── */
+        .top-nav {
+            background-color: #007bff;
+            color: #fff;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .top-nav h1 { font-size: 1.2rem; margin: 0; }
+        .top-nav .admin-info { font-size: 0.9rem; opacity: 0.9; }
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.5);
+            color: #fff;
+            padding: 5px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            transition: background 0.2s;
+        }
+        .btn-logout:hover { background: rgba(255,255,255,0.35); }
+
+        /* ── Stats cards ── */
+        .stats-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+        .stat-card {
+            flex: 1;
+            min-width: 130px;
+            background: #fff;
+            border-radius: 8px;
+            padding: 18px 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .stat-card .stat-number { font-size: 2rem; font-weight: bold; }
+        .stat-card .stat-label  { font-size: 0.82rem; color: #6c757d; margin-top: 4px; }
+        .stat-card.total    .stat-number { color: #007bff; }
+        .stat-card.pending  .stat-number { color: #fd7e14; }
+        .stat-card.approved .stat-number { color: #198754; }
+        .stat-card.rejected .stat-number { color: #dc3545; }
+
+        /* ── Filters ── */
+        .filters-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 18px 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .filters-card .filter-group { display: flex; flex-direction: column; gap: 4px; }
+        .filters-card label { font-size: 0.8rem; font-weight: bold; color: #6c757d; }
+        .filters-card select {
+            padding: 7px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            min-width: 160px;
+        }
+        .btn-filter {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            align-self: flex-end;
+        }
+        .btn-filter:hover { background-color: #0056b3; }
+
+        /* ── Table ── */
+        .table-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .table-card table { margin: 0; font-size: 0.88rem; }
+        .table-card th { background-color: #007bff; color: #fff; font-weight: 600; border: none; }
+        .table-card td { vertical-align: middle; }
+
+        /* Status badges */
+        .badge-pending  { background-color: #fff3cd; color: #856404; border: 1px solid #ffc107; padding: 3px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; }
+        .badge-approved { background-color: #d1e7dd; color: #0f5132; border: 1px solid #198754; padding: 3px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; }
+        .badge-rejected { background-color: #f8d7da; color: #842029; border: 1px solid #dc3545; padding: 3px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; }
+
+        /* Action buttons */
+        .btn-approve {
+            background-color: #198754; color: #fff; border: none;
+            padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.82rem;
+            transition: background 0.15s;
+        }
+        .btn-approve:hover { background-color: #146c43; }
+        .btn-reject {
+            background-color: #dc3545; color: #fff; border: none;
+            padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.82rem;
+            margin-left: 5px; transition: background 0.15s;
+        }
+        .btn-reject:hover { background-color: #b02a37; }
+
+        .no-data { text-align: center; padding: 40px; color: #6c757d; font-size: 0.95rem; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-box {
+            background: #fff;
+            border-radius: 8px;
+            padding: 28px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        .modal-box h5 { margin-bottom: 16px; color: #007bff; }
+        .modal-box label { font-weight: bold; font-size: 0.88rem; display: block; margin-bottom: 4px; }
+        .modal-box textarea {
+            width: 100%; border: 1px solid #dee2e6; border-radius: 5px;
+            padding: 8px; font-size: 0.9rem; resize: vertical;
+        }
+        .modal-actions { display: flex; gap: 10px; margin-top: 16px; justify-content: flex-end; }
+        .modal-actions button { padding: 8px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9rem; }
+        .btn-confirm-approve { background: #198754; color: #fff; }
+        .btn-confirm-approve:hover { background: #146c43; }
+        .btn-confirm-reject  { background: #dc3545; color: #fff; }
+        .btn-confirm-reject:hover  { background: #b02a37; }
+        .btn-cancel { background: #e9ecef; color: #333; }
+        .btn-cancel:hover { background: #dee2e6; }
+
+        /* Toast */
+        .toast-wrap {
+            position: fixed; top: 20px; right: 20px; z-index: 9999;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .toast-item {
+            padding: 12px 18px; border-radius: 6px; font-size: 0.88rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: fadeIn 0.3s ease;
+        }
+        .toast-item.success { background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
+        .toast-item.error   { background: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+    </style>
+</head>
+<body>
+
+    <!-- Toast -->
+    <div class="toast-wrap" id="toastWrap"></div>
+
+    <!-- Review Modal -->
+    <div class="modal-overlay" id="reviewModal">
+        <div class="modal-box">
+            <h5 id="modalTitle">Review Leave Request</h5>
+            <p id="modalInfo" style="font-size:0.88rem; color:#555; margin-bottom:14px;"></p>
+            <label for="adminComment">Comment (optional)</label>
+            <textarea id="adminComment" rows="3" placeholder="Add a comment for the faculty member..."></textarea>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="btn-confirm-reject"  id="btnConfirmReject"  onclick="confirmReview('Rejected')">Reject</button>
+                <button class="btn-confirm-approve" id="btnConfirmApprove" onclick="confirmReview('Approved')">Approve</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <div class="top-nav">
+        <h1> FLMS — Admin Dashboard</h1>
+        <div style="display:flex; align-items:center; gap:14px;">
+            <span class="admin-info">Logged in as: <strong id="adminName">Admin</strong></span>
+            <button class="btn-logout" onclick="logout()">Sign Out</button>
+        </div>
+    </div>
+
+    <div class="container-fluid" style="padding: 24px;">
+
+        <!-- Stats -->
+        <div class="stats-row" id="statsRow">
+            <div class="stat-card total">
+                <div class="stat-number" id="statTotal">—</div>
+                <div class="stat-label">Total Requests</div>
+            </div>
+            <div class="stat-card pending">
+                <div class="stat-number" id="statPending">—</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card approved">
+                <div class="stat-number" id="statApproved">—</div>
+                <div class="stat-label">Approved</div>
+            </div>
+            <div class="stat-card rejected">
+                <div class="stat-number" id="statRejected">—</div>
+                <div class="stat-label">Rejected</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-card">
+            <div class="filter-group">
+                <label>Department</label>
+                <select id="filterDept">
+                    <option value="all">All Departments</option>
+                    <option>Computer Science</option>
+                    <option>Mechanical Engineering</option>
+                    <option>Humanities</option>
+                    <option>Mathematics</option>
+                    <option>Administration</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Status</label>
+                <select id="filterStatus">
+                    <option value="all">All Statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+            </div>
+            <button class="btn-filter" onclick="loadLeaves()">Apply Filter</button>
+        </div>
+
+        <!-- Table -->
+        <div class="table-card">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Faculty Name</th>
+                            <th>Department</th>
+                            <th>Leave Type</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Reason</th>
+                            <th>Submitted</th>
+                            <th>Status</th>
+                            <th>Admin Comment</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leavesTableBody">
+                        <tr><td colspan="11" class="no-data">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ── Auth Guard ─────────────────────────────────────────────────────────
+        const employee = JSON.parse(sessionStorage.getItem('employee') || 'null');
+        if (!employee || employee.role !== 'admin') {
+            alert('Access denied. Admins only.');
+            window.location.href = 'http://localhost:3000/';
+        } else {
+            document.getElementById('adminName').textContent = employee.name;
+        }
+
+        let currentLeaveId = null;
+
+        // ── Load stats ─────────────────────────────────────────────────────────
+        async function loadStats() {
+            try {
+                const res  = await fetch('http://localhost:3000/api/admin/stats');
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('statTotal').textContent    = data.stats.total;
+                    document.getElementById('statPending').textContent  = data.stats.pending;
+                    document.getElementById('statApproved').textContent = data.stats.approved;
+                    document.getElementById('statRejected').textContent = data.stats.rejected;
+                }
+            } catch (e) { console.error('Stats error:', e); }
+        }
+
+        // ── Load leaves ────────────────────────────────────────────────────────
+        async function loadLeaves() {
+            const dept   = document.getElementById('filterDept').value;
+            const status = document.getElementById('filterStatus').value;
+            const params = new URLSearchParams();
+            if (dept   !== 'all') params.append('department', dept);
+            if (status !== 'all') params.append('status', status);
+
+            const tbody = document.getElementById('leavesTableBody');
+            tbody.innerHTML = `<tr><td colspan="11" class="no-data">Loading...</td></tr>`;
+
+            try {
+                const res  = await fetch(`http://localhost:3000/api/admin/leaves?${params}`);
+                const data = await res.json();
+
+                if (!data.success || data.requests.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="11" class="no-data">No leave requests found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = data.requests.map((r, i) => `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${r.faculty_name}</td>
+                        <td>${r.department}</td>
+                        <td>${r.leave_type}</td>
+                        <td>${formatDate(r.start_date)}</td>
+                        <td>${formatDate(r.end_date)}</td>
+                        <td style="max-width:180px;">${r.reason}</td>
+                        <td>${formatDate(r.submitted_at)}</td>
+                        <td><span class="badge-${r.status.toLowerCase()}">${r.status}</span></td>
+                        <td style="max-width:150px; font-style:italic; color:#555;">${r.admin_comment || '—'}</td>
+                        <td>
+                            ${r.status === 'Pending'
+                                ? `<button class="btn-approve" onclick="openModal(${r.id}, '${r.faculty_name}', '${r.leave_type}')">Approve</button>
+                                   <button class="btn-reject"  onclick="openModal(${r.id}, '${r.faculty_name}', '${r.leave_type}')">Reject</button>`
+                                : `<span style="color:#6c757d; font-size:0.82rem;">Reviewed</span>`
+                            }
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="11" class="no-data">Failed to load. Is the server running?</td></tr>`;
+            }
+        }
+
+        // ── Modal ──────────────────────────────────────────────────────────────
+        function openModal(id, name, leaveType) {
+            currentLeaveId = id;
+            document.getElementById('modalInfo').textContent =
+                `Faculty: ${name} | Leave: ${leaveType}`;
+            document.getElementById('adminComment').value = '';
+            document.getElementById('reviewModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('reviewModal').classList.remove('show');
+            currentLeaveId = null;
+        }
+
+        async function confirmReview(status) {
+            if (!currentLeaveId) return;
+            const comment = document.getElementById('adminComment').value.trim();
+
+            try {
+                const res  = await fetch(`http://localhost:3000/api/admin/leaves/${currentLeaveId}`, {
+                    method:  'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body:    JSON.stringify({ status, adminComment: comment, reviewedBy: employee.name }),
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('success', ` Leave request ${status} successfully.`);
+                    closeModal();
+                    loadLeaves();
+                    loadStats();
+                } else {
+                    showToast('error', data.message || 'Action failed.');
+                }
+            } catch (e) {
+                showToast('error', 'Cannot reach server.');
+            }
+        }
+
+        // ── Helpers ────────────────────────────────────────────────────────────
+        function formatDate(dateStr) {
+            if (!dateStr) return '—';
+            return new Date(dateStr).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+        }
+
+        function showToast(type, message) {
+            const wrap  = document.getElementById('toastWrap');
+            const toast = document.createElement('div');
+            toast.className = `toast-item ${type}`;
+            toast.textContent = message;
+            wrap.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        function logout() {
+            sessionStorage.removeItem('employee');
+            window.location.href = 'http://localhost:3000/';
+        }
+
+        // ── Close modal on backdrop click ──────────────────────────────────────
+        document.getElementById('reviewModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // ── Init ───────────────────────────────────────────────────────────────
+        loadStats();
+        loadLeaves();
+    </script>
+
+</body>
+</html>

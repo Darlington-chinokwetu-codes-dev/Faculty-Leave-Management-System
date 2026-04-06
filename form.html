@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Leave Request — FLMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700&display=swap');
+
+        :root {
+            --primary:      #1a56db;
+            --primary-dark: #1e40af;
+            --success:      #16a34a;
+            --danger:       #dc2626;
+            --accent:       #f59e0b;
+            --bg:           #f0f4ff;
+            --card:         #ffffff;
+            --text:         #1e293b;
+            --muted:        #64748b;
+            --border:       #e2e8f0;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            padding: 40px 16px;
+            background-image:
+                radial-gradient(ellipse at 10% 10%, rgba(26,86,219,0.10) 0%, transparent 55%),
+                radial-gradient(ellipse at 90% 90%, rgba(245,158,11,0.08) 0%, transparent 55%);
+        }
+
+        /* ── Top nav bar ── */
+        .top-bar {
+            max-width: 820px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .top-bar .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .brand-dot {
+            width: 38px; height: 38px;
+            background: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .brand-dot svg { width: 20px; height: 20px; fill: #fff; }
+        .brand-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            color: var(--text);
+        }
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 6px 14px 6px 8px;
+            font-size: 0.85rem;
+            color: var(--text);
+        }
+        .user-avatar {
+            width: 30px; height: 30px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        .btn-logout {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.82rem;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+        /* ── Card ── */
+        .form-card {
+            max-width: 820px;
+            margin: 0 auto;
+            background: var(--card);
+            border-radius: 20px;
+            box-shadow:
+                0 1px 3px rgba(0,0,0,0.06),
+                0 8px 32px rgba(26,86,219,0.10);
+            border: 1px solid rgba(26,86,219,0.08);
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 28px 32px;
+            color: #fff;
+        }
+        .card-header-custom h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin-bottom: 4px;
+        }
+        .card-header-custom p {
+            opacity: 0.8;
+            font-size: 0.88rem;
+            margin: 0;
+        }
+
+        .card-body-custom { padding: 32px; }
+
+        /* ── Section label ── */
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--primary);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(26,86,219,0.12);
+        }
+
+        /* ── Field styles ── */
+        .field-group { margin-bottom: 20px; }
+        .field-group label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+        .field-group input,
+        .field-group select,
+        .field-group textarea {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text);
+            background: #f8faff;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .field-group input:focus,
+        .field-group select:focus,
+        .field-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26,86,219,0.12);
+            background: #fff;
+        }
+        .field-group input.error,
+        .field-group select.error,
+        .field-group textarea.error {
+            border-color: var(--danger);
+        }
+        .field-error {
+            font-size: 0.8rem;
+            color: var(--danger);
+            margin-top: 4px;
+            display: none;
+        }
+        .field-error.show { display: block; }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+        .divider {
+            border: none;
+            border-top: 1.5px solid var(--border);
+            margin: 28px 0;
+        }
+
+        /* ── Submit button ── */
+        .btn-submit {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 36px;
+            background: var(--success);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 4px 16px rgba(22,163,74,0.3);
+        }
+        .btn-submit:hover  { background: #15803d; box-shadow: 0 6px 20px rgba(22,163,74,0.4); }
+        .btn-submit:active { transform: scale(0.98); }
+        .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        /* Spinner */
+        .spinner {
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+        .btn-submit.loading .spinner { display: block; }
+        .btn-submit.loading .btn-text { display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Toast notification ── */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.14);
+            font-size: 0.9rem;
+            color: var(--text);
+            max-width: 340px;
+            animation: slideIn 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        .toast.success { border-left-color: var(--success); }
+        .toast.error   { border-left-color: var(--danger); }
+        .toast-icon { font-size: 1.2rem; }
+        .toast-msg  { flex: 1; }
+        .toast-title { font-weight: 700; margin-bottom: 2px; }
+        .toast-sub   { font-size: 0.82rem; color: var(--muted); }
+        @keyframes slideIn {
+            from { transform: translateX(60px); opacity: 0; }
+            to   { transform: translateX(0);    opacity: 1; }
+        }
+
+        /* Card footer */
+        .card-footer-custom {
+            padding: 16px 32px;
+            background: #f8faff;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 0.82rem;
+            color: var(--muted);
+        }
+        .submit-area {
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        /* ── Leave History Section ── */
+        .history-card {
+            max-width: 820px;
+            margin: 28px auto 40px;
+            background: var(--card);
+            border-radius: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 32px rgba(26,86,219,0.10);
+            border: 1px solid rgba(26,86,219,0.08);
+            overflow: hidden;
+        }
+        .history-header {
+            background: linear-gradient(135deg, #1e40af 0%, #1a56db 100%);
+            padding: 20px 28px;
+            color: #fff;
+        }
+        .history-header h4 { font-family: 'Playfair Display', serif; margin: 0; font-size: 1.15rem; }
+        .history-header p  { margin: 4px 0 0; opacity: 0.8; font-size: 0.85rem; }
+
+        .history-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+        .history-table th {
+            background: #f0f4ff;
+            color: var(--primary);
+            font-weight: 700;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .history-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            vertical-align: middle;
+        }
+        .history-table tr:last-child td { border-bottom: none; }
+        .history-table tr:hover td { background: #f8faff; }
+
+        .pill { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; }
+        .pill-pending  { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
+        .pill-approved { background: #d1e7dd; color: #0f5132; border: 1px solid #198754; }
+        .pill-rejected { background: #f8d7da; color: #842029; border: 1px solid #dc3545; }
+
+        .history-empty  { text-align: center; padding: 36px; color: var(--muted); font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Top navigation -->
+    <div class="top-bar">
+        <a href="/" class="brand">
+            <div class="brand-dot">
+                <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+            </div>
+            <span class="brand-name">FLMS Portal</span>
+        </a>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div class="user-badge">
+                <div class="user-avatar" id="userAvatar">?</div>
+                <span id="userName">Loading...</span>
+            </div>
+            <button class="btn-logout" onclick="logout()">Sign Out</button>
+        </div>
+    </div>
+
+    <!-- Main form card -->
+    <div class="form-card">
+        <div class="card-header-custom">
+            <h3>Faculty Leave Request Form</h3>
+            <p>Complete all required fields and submit your request for approval.</p>
+        </div>
+
+        <div class="card-body-custom">
+            <form id="leaveForm" novalidate>
+
+                <!-- Section 1: Personal Info -->
+                <div class="section-label">Personal Information</div>
+                <div class="two-col">
+                    <div class="field-group">
+                        <label for="facultyName">Full Name *</label>
+                        <input type="text" id="facultyName" placeholder="Dr. Jane Doe">
+                        <div class="field-error" id="err-facultyName">Please enter your full name.</div>
+                    </div>
+                    <div class="field-group">
+                        <label for="department">Department *</label>
+                        <select id="department">
+                            <option value="" disabled selected>Choose department...</option>
+                            <option>Computer Science</option>
+                            <option>Mechanical Engineering</option>
+                            <option>Humanities</option>
+                            <option>Mathematics</option>
+                        </select>
+                        <div class="field-error" id="err-department">Please select a department.</div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Section 2: Leave Details -->
+                <div class="section-label">Leave Details</div>
+
+                <div class="field-group">
+                    <label for="leaveType">Type of Leave *</label>
+                    <select id="leaveType">
+                        <option value="" disabled selected>Choose leave type...</option>
+                        <option>Casual Leave (CL)</option>
+                        <option>Sick Leave (SL)</option>
+                        <option>Sabbatical Leave</option>
+                        <option>Duty Leave (Conference/Research)</option>
+                    </select>
+                    <div class="field-error" id="err-leaveType">Please select a leave type.</div>
+                </div>
+
+                <div class="two-col">
+                    <div class="field-group">
+                        <label for="startDate">Start Date *</label>
+                        <input type="date" id="startDate">
+                        <div class="field-error" id="err-startDate">Please provide the start date.</div>
+                    </div>
+                    <div class="field-group">
+                        <label for="endDate">End Date *</label>
+                        <input type="date" id="endDate">
+                        <div class="field-error" id="err-endDate">Please provide the end date.</div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="reason">Reason for Leave *</label>
+                    <textarea id="reason" rows="3" placeholder="Briefly describe the reason for your leave..."></textarea>
+                    <div class="field-error" id="err-reason">Please provide a reason for the leave.</div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Section 3: Coverage -->
+                <div class="section-label">Coverage Plan <span style="font-weight:400;text-transform:none;letter-spacing:0;">(Optional)</span></div>
+
+                <div class="field-group">
+                    <label for="coveragePlan">Backup Faculty / Coverage Arrangements</label>
+                    <textarea id="coveragePlan" rows="2" placeholder="e.g., Prof. Smith will cover my CS101 class on Mon/Wed."></textarea>
+                </div>
+
+                <div class="submit-area">
+                    <button class="btn-submit" id="submitBtn" type="button" onclick="handleSubmit()">
+                        <div class="spinner"></div>
+                        <span class="btn-text">✈ Submit Leave Request</span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="card-footer-custom" id="footerMsg">
+            Please fill out all required fields marked with *.
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ── Auth Guard ──────────────────────────────────────────────────────────
+        const employeeData = JSON.parse(sessionStorage.getItem('employee') || 'null');
+
+        if (employeeData) {
+            document.getElementById('userName').textContent = employeeData.name;
+            document.getElementById('userAvatar').textContent = employeeData.name.charAt(0).toUpperCase();
+            document.getElementById('facultyName').value = employeeData.name;
+            const deptSelect = document.getElementById('department');
+            for (let opt of deptSelect.options) {
+                if (opt.text === employeeData.department) { opt.selected = true; break; }
+            }
+            loadHistory();
+        } else {
+            window.location.href = 'http://localhost:3000/';
+        }
+
+        function logout() {
+            sessionStorage.removeItem('employee');
+            window.location.href = 'http://localhost:3000/';
+        }
+
+        // ── Validation ──────────────────────────────────────────────────────────
+        function validateField(id, errorId, check) {
+            const el  = document.getElementById(id);
+            const err = document.getElementById(errorId);
+            const val = el.value.trim();
+            const ok  = check(val);
+            el.classList.toggle('error', !ok);
+            err.classList.toggle('show', !ok);
+            return ok;
+        }
+
+        function validate() {
+            const s = document.getElementById('startDate').value;
+            let ok = true;
+            ok = validateField('facultyName', 'err-facultyName', v => v.length > 0) && ok;
+            ok = validateField('department',  'err-department',  v => v.length > 0) && ok;
+            ok = validateField('leaveType',   'err-leaveType',   v => v.length > 0) && ok;
+            ok = validateField('startDate',   'err-startDate',   v => v.length > 0) && ok;
+            ok = validateField('endDate', 'err-endDate', v => {
+                if (!v) return false;
+                if (s && new Date(v) < new Date(s)) {
+                    document.getElementById('err-endDate').textContent = 'End date cannot be before start date.';
+                    return false;
+                }
+                return true;
+            }) && ok;
+            ok = validateField('reason', 'err-reason', v => v.length >= 5) && ok;
+            return ok;
+        }
+
+        // ── Submit ──────────────────────────────────────────────────────────────
+        async function handleSubmit() {
+            if (!validate()) return;
+
+            const btn = document.getElementById('submitBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            const payload = {
+                employeeId:   employeeData.employeeId,
+                facultyName:  document.getElementById('facultyName').value.trim(),
+                department:   document.getElementById('department').value,
+                leaveType:    document.getElementById('leaveType').value,
+                startDate:    document.getElementById('startDate').value,
+                endDate:      document.getElementById('endDate').value,
+                reason:       document.getElementById('reason').value.trim(),
+                coveragePlan: document.getElementById('coveragePlan').value.trim(),
+            };
+
+            try {
+                const res  = await fetch('http://localhost:3000/api/leave', {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body:    JSON.stringify(payload),
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('success', ' Request Submitted', `Your leave request #${data.requestId} has been sent for approval.`);
+                    document.getElementById('footerMsg').textContent =
+                        ` Leave request #${data.requestId} submitted. Pending approval.`;
+                    document.getElementById('footerMsg').style.color = '#16a34a';
+                    document.getElementById('leaveForm').reset();
+                    document.getElementById('facultyName').value = employeeData.name;
+                    loadHistory(); // refresh history after submit
+                } else {
+                    showToast('error', 'Submission Failed', data.message);
+                }
+            } catch (err) {
+                showToast('error', ' Network Error', 'Could not reach the server. Please try again.');
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        }
+
+        // ── Load Leave History ───────────────────────────────────────────────────
+        async function loadHistory() {
+            const tbody = document.getElementById('historyBody');
+            try {
+                const res  = await fetch(`http://localhost:3000/api/leave/${employeeData.employeeId}`);
+                const data = await res.json();
+
+                if (!data.success || data.requests.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" class="history-empty">You have not submitted any leave requests yet.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = data.requests.map((r, i) => {
+                    const statusPill = {
+                        Pending:  `<span class="pill pill-pending"> Pending</span>`,
+                        Approved: `<span class="pill pill-approved">Approved</span>`,
+                        Rejected: `<span class="pill pill-rejected"> Rejected</span>`,
+                    }[r.status] || r.status;
+
+                    return `<tr>
+                        <td>${i + 1}</td>
+                        <td>${r.leave_type}</td>
+                        <td>${fmtDate(r.start_date)}</td>
+                        <td>${fmtDate(r.end_date)}</td>
+                        <td style="max-width:180px;">${r.reason}</td>
+                        <td>${fmtDate(r.submitted_at)}</td>
+                        <td>${statusPill}</td>
+                        <td style="font-style:italic; color:#64748b;">${r.admin_comment || '—'}</td>
+                    </tr>`;
+                }).join('');
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="8" class="history-empty">Could not load history.</td></tr>`;
+            }
+        }
+
+        function fmtDate(d) {
+            if (!d) return '—';
+            return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        // ── Toast ───────────────────────────────────────────────────────────────
+        function showToast(type, title, sub) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div class="toast-msg">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-sub">${sub}</div>
+                </div>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        }
+    </script>
+
+    <!-- Leave History -->
+    <div class="history-card">
+        <div class="history-header">
+            <h4> My Leave History</h4>
+            <p>Track the status of all your submitted leave requests.</p>
+        </div>
+        <div style="overflow-x:auto;">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Leave Type</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Reason</th>
+                        <th>Submitted</th>
+                        <th>Status</th>
+                        <th>Admin Comment</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                    <tr><td colspan="8" class="history-empty">Loading your history...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>
