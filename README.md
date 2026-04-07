@@ -37,10 +37,10 @@ npm start
 Open in browser:
 http://localhost:3000
 👥 Team Members (4 Members Collaboration)
-Front-End Developer
+Front-End Developer-Prasad Syam
 Back-End Developer(Me)
-Database Manager
-Testing & Documentation Lead
+Database Manager- Satheesh Kumar
+Testing & Documentation Lead-P. Prabhas
 🧪 Testing
 
 The system has been tested for:
@@ -61,3 +61,5 @@ This project is developed for educational purposes.
 🙌 Acknowledgement
 
 We would like to thank our faculty and institution for providing guidance and support throughout the development of this project.
+For the demonstration and project explanation , see the video 
+https://drive.google.com/file/d/1is_kaOt5WeJJMILFSCK0Bd4woVt3OUro/view?usp=drive_link
