@@ -1,20 +1,20 @@
 Faculty Leave Management System
-📌 Project Overview
+Project Overview
 
 The Faculty Leave Management System is a web-based application designed to streamline and automate the process of managing faculty leave in educational institutions. It replaces manual paperwork with a digital system, improving efficiency, accuracy, and transparency.
 
-🚀 Features
+Features
 Faculty can apply for leave online
 View leave status (approved/rejected/pending)
 Admin can approve or reject leave requests
 Secure user authentication system
 Dashboard for managing all leave records
 Responsive and user-friendly interface
-🛠️ Technologies Used
+Technologies Used
 Frontend: HTML, CSS, JavaScript
 Backend: Node.js, Express.js
 Database: MongoDB
-📂 Project Structure
+Project Structure
 Faculty-Leave-Management-System/
 │── models/        # Database schemas (MongoDB)
 │── routes/        # Express routes
@@ -22,7 +22,7 @@ Faculty-Leave-Management-System/
 │── public/        # CSS, JS, images
 │── server.js         # Main server file
 │── package.json   # Project dependencies
-⚙️ Installation & Setup
+Installation & Setup
 Clone the repository
 git clone https://github.com/Darlington-chinokwetu-codes-dev/faculty-leave-management.git
 cd faculty-leave-management
@@ -36,12 +36,12 @@ Run the application
 npm start
 Open in browser:
 http://localhost:3000
-👥 Team Members (4 Members Collaboration)
+Team Members (4 Members Collaboration)
 Front-End Developer-Prasad Syam
 Back-End Developer(Me)
 Database Manager- Satheesh Kumar
 Testing & Documentation Lead-P. Prabhas
-🧪 Testing
+Testing
 
 The system has been tested for:
 
@@ -49,16 +49,16 @@ Form validation
 Login authentication
 Leave request submission
 Admin approval/rejection process
-📈 Future Enhancements
+Future Enhancements
 Email/SMS notifications for leave status
 Role-based access control
 Mobile app integration
 Leave balance tracking
-📄 License
+License
 
 This project is developed for educational purposes.
 
-🙌 Acknowledgement
+Acknowledgement
 
 We would like to thank our faculty and institution for providing guidance and support throughout the development of this project.
 For the demonstration and project explanation , see the video 
